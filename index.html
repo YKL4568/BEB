@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>의공기사 학습노트</title>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
 :root{
   --navy:#17233C;
@@ -14,13 +17,14 @@
   --card:#FFFFFF;
   --text:#1F2937;
   --text-muted:#6B7280;
-  --line:#E0E8F4;
-  --card-shadow:0 1px 3px rgba(28,45,78,.08), 0 1px 2px rgba(28,45,78,.06);
+  --line:#E7E0D2;
+  --card-shadow:0 1px 3px rgba(28,45,78,.06), 0 1px 2px rgba(28,45,78,.04);
   --card-border:#EAE4D8;
 }
 *{box-sizing:border-box}
+html{overflow-y:scroll;scrollbar-gutter:stable}
 html,body{margin:0;padding:0;height:100%;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",-apple-system,sans-serif;background:var(--bg);color:var(--text)}
-body{display:grid;grid-template-columns:280px 1fr;align-items:stretch;min-height:100vh}
+body{display:grid;grid-template-columns:280px 1fr;align-items:stretch;min-height:100vh;max-width:1424px;margin:0 auto;box-shadow:0 0 40px rgba(28,45,78,.06)}
 a{text-decoration:none;color:inherit}
 button{font-family:inherit;cursor:pointer}
 
@@ -28,25 +32,25 @@ button{font-family:inherit;cursor:pointer}
 #sidebar{
   min-width:0;
   background:linear-gradient(180deg,var(--navy) 0%,var(--navy-2) 100%);
-  color:#C7D3E6;display:flex;flex-direction:column;overflow:hidden;
+  color:#C7D3E6;display:flex;flex-direction:column;overflow:visible;
   box-shadow:2px 0 12px rgba(0,0,0,.15);z-index:20;
 }
 #sidebar-header{
-  flex-shrink:0;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;
+  flex-shrink:0;padding:16px 14px 12px;
   border-bottom:1px solid rgba(255,255,255,.06);
 }
-#sidebar-title{font-size:13.5px;font-weight:700;color:#E8EDF6;letter-spacing:-.2px;white-space:nowrap}
-#nav-links{display:flex;flex-direction:row;gap:6px;flex-shrink:0}
+#sidebar-title{font-size:16px;font-weight:700;color:#E8EDF6;letter-spacing:-.2px;white-space:nowrap}
+#nav-links{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;padding:12px 14px 0}
 #dash-nav-btn,#custom-nav-btn{
-  display:flex;align-items:center;gap:4px;padding:6px 9px;border-radius:7px;white-space:nowrap;
-  font-size:11.5px;font-weight:600;color:#B4C1D8;background:rgba(255,255,255,.05)
+  display:flex;align-items:center;justify-content:center;gap:5px;padding:8px 6px;border-radius:7px;white-space:nowrap;
+  font-size:12px;font-weight:600;color:#B4C1D8;background:rgba(255,255,255,.05)
   ;border:1px solid rgba(255,255,255,.08);transition:.15s;
 }
 #dash-nav-btn:hover,#custom-nav-btn:hover{background:rgba(255,255,255,.1);color:#fff}
 #dash-nav-btn.active{background:rgba(91,147,214,.24);color:#fff;border-color:rgba(91,147,214,.4)}
 
 #sidebar-scroll{flex:1;min-height:0;overflow-y:visible;overscroll-behavior:contain}
-#subject-tabs{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;padding:12px 14px}
+#subject-tabs{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;padding:10px 14px 12px}
 .subj-tab{
   padding:7px 4px;border-radius:6px;font-size:11.5px;font-weight:600;text-align:center;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
@@ -79,7 +83,7 @@ button{font-family:inherit;cursor:pointer}
 .priority-badge.p-low{background:#6B7280}
 
 /* ── MAIN ── */
-#main{flex:1;display:flex;flex-direction:column;min-width:0}
+#main{flex:1;display:flex;flex-direction:column;min-width:0;position:relative}
 #top-bar{
   position:sticky;top:0;z-index:15;background:var(--navy);color:#fff;
   display:flex;align-items:center;gap:14px;padding:10px 20px;box-shadow:0 2px 8px rgba(0,0,0,.12);
@@ -93,8 +97,23 @@ button{font-family:inherit;cursor:pointer}
 }
 #top-bar .tab-btn.active{background:rgba(255,255,255,.14);color:#fff}
 #auth-status{display:flex;align-items:center;gap:8px;order:3;font-size:12px;color:#CBD5E1}
-#auth-status button{color:#CBD5E1;border-color:rgba(255,255,255,.28);background:rgba(255,255,255,.06)}
+#auth-status button{color:#CBD5E1;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.06);border-radius:6px;padding:5px 10px;font-size:12px}
 #auth-status button:hover{background:rgba(255,255,255,.16);color:#fff;border-color:rgba(255,255,255,.4)}
+
+#auth-panel{
+  display:none;position:absolute;top:56px;right:20px;z-index:50;width:250px;
+  background:var(--card);border:1px solid var(--card-border);border-radius:10px;
+  box-shadow:var(--card-shadow);padding:16px;
+}
+#auth-panel.show{display:block}
+#auth-panel .auth-panel-row{margin-bottom:8px}
+#auth-panel input{width:100%;padding:8px 10px;border:1px solid var(--card-border);border-radius:6px;font-size:13px}
+#auth-panel .auth-msg{font-size:12px;color:#EF4444;margin-bottom:6px;display:none}
+#auth-panel .auth-msg.show{display:block}
+#auth-panel button{width:100%;padding:8px;border-radius:6px;border:none;background:var(--navy);color:#fff;font-size:13px;font-weight:600;margin-top:2px}
+#auth-panel button:hover{background:var(--navy-2)}
+#auth-panel .auth-panel-switch{font-size:11.5px;color:var(--text-muted);text-align:center;margin-top:10px;cursor:pointer;text-decoration:underline}
+#auth-panel .auth-panel-hint{font-size:11px;color:var(--text-muted);margin-top:10px;line-height:1.5}
 
 #sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:19}
 
@@ -114,6 +133,8 @@ button{font-family:inherit;cursor:pointer}
 .md-content td{padding:8px 10px;border-bottom:1px solid var(--line);font-size:13px}
 .md-content code{background:#EEF2FA;padding:1px 5px;border-radius:4px;font-size:0.92em;cursor:pointer}
 .md-content code:hover{background:#DCE6F7}
+.md-content td.tts-cell,.md-content th.tts-cell{cursor:pointer}
+.md-content td.tts-cell:hover,.md-content th.tts-cell:hover{background:#DCE6F7}
 
 .content-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
 .content-tab-btn{
@@ -165,7 +186,7 @@ button{font-family:inherit;cursor:pointer}
 /* Mobile */
 @media (max-width:768px){
   body{display:block}
-  #sidebar{position:fixed;left:0;top:0;bottom:0;height:auto;transform:translateX(-100%);transition:transform .2s;width:280px;z-index:30}
+  #sidebar{position:fixed;left:0;top:0;bottom:0;height:auto;overflow:hidden;transform:translateX(-100%);transition:transform .2s;width:280px;z-index:30}
   #sidebar.open{transform:translateX(0)}
   #sidebar-scroll{overflow-y:auto}
   #sidebar-overlay.show{display:block}
@@ -175,6 +196,7 @@ button{font-family:inherit;cursor:pointer}
   #top-bar .tab-btn{padding:6px 9px;font-size:12px}
   #content-area{padding:14px 12px 40px}
   .card{padding:16px}
+  #auth-panel{top:48px;right:10px;width:min(250px,calc(100vw - 20px))}
   #auth-status{font-size:11px}
 }
 </style>
@@ -183,13 +205,13 @@ button{font-family:inherit;cursor:pointer}
 <div id="sidebar-overlay" onclick="closeSidebar()"></div>
 <div id="sidebar">
   <div id="sidebar-header">
-    <div id="sidebar-title">📘 의공기사 필기</div>
+    <div id="sidebar-title">📘 의공기사 학습노트</div>
+  </div>
+  <div id="sidebar-scroll">
     <div id="nav-links">
       <button id="dash-nav-btn" onclick="showDashboard()">📊 진도</button>
       <a id="custom-nav-btn" href="custom.html">➕ 복습</a>
     </div>
-  </div>
-  <div id="sidebar-scroll">
     <div id="subject-tabs"></div>
     <div id="unit-list"></div>
   </div>
@@ -200,6 +222,15 @@ button{font-family:inherit;cursor:pointer}
     <button id="hamburger-btn" onclick="toggleSidebar()">☰</button>
     <div id="top-bar-title">왼쪽 사이드바에서 단원을 선택하세요</div>
     <div class="tabs" id="content-tabs-top"></div>
+    <div id="auth-status"></div>
+  </div>
+  <div id="auth-panel">
+    <div id="auth-panel-msg" class="auth-msg"></div>
+    <div class="auth-panel-row"><input type="text" id="idx-auth-email" placeholder="이메일"></div>
+    <div class="auth-panel-row"><input type="password" id="idx-auth-pw" placeholder="비밀번호 (6자 이상)"></div>
+    <button id="idx-auth-submit-btn" onclick="idxSubmitAuth()">로그인</button>
+    <div class="auth-panel-switch" id="idx-auth-switch" onclick="idxToggleAuthMode()">계정이 없다면 회원가입</div>
+    <div class="auth-panel-hint">로그인하면 학습 진도가 계정에 저장되어 다른 기기에서도 이어서 볼 수 있어요.</div>
   </div>
   <div id="content-area">
     <div class="placeholder">왼쪽 사이드바에서 단원을 선택하세요</div>
@@ -228,6 +259,7 @@ function markDone(unitId, key){
   prog[unitId][key] = true;
   saveProg();
   renderSidebar();
+  syncProgressToCloud();
 }
 
 function findUnit(unitId){
@@ -483,9 +515,29 @@ function speak(text, el){
   window.speechSynthesis.speak(utter);
 }
 
+function extractEnglish(text){
+  const m = text.match(/[A-Za-z][A-Za-z\-\/]*(?:[  ]+[A-Za-z][A-Za-z\-\/]*)*/g) || [];
+  return m.join(', ');
+}
+function countEnglishLetters(text){ return (text.match(/[A-Za-z]/g) || []).length; }
+function countKoreanChars(text){ return (text.match(/[가-힣]/g) || []).length; }
+
 function makeSpeakable(root){
   root.querySelectorAll('.md-content code').forEach(el => {
     el.onclick = () => speak(el.textContent, el);
+  });
+  // 표(table) 안의 영어 단어 셀도 클릭시 발음 재생 (의학용어/해부생리학 등 영어-한글 대조표 대응)
+  root.querySelectorAll('.md-content td, .md-content th').forEach(cell => {
+    const text = (cell.textContent || '').trim();
+    if(!text) return;
+    const engLen = countEnglishLetters(text);
+    const korLen = countKoreanChars(text);
+    if(engLen < 2 || engLen < korLen) return;
+    const spoken = extractEnglish(text);
+    if(!spoken) return;
+    cell.classList.add('tts-cell');
+    cell.title = '클릭하면 영어 발음을 들을 수 있어요';
+    cell.onclick = () => speak(spoken, cell);
   });
 }
 
@@ -573,10 +625,139 @@ document.addEventListener('keydown', (e) => {
   else if(e.key === 'Enter' && currentTab === 'quiz'){ e.preventDefault(); answerNextQuiz(); }
 });
 
+// ─── FIREBASE (계정 로그인 + 학습 진도 클라우드 동기화) ────────────────────────
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCEJwszSu4cWLZwflkDShCK44M9jkhDpLk",
+  authDomain: "biomedicalengineerbook.firebaseapp.com",
+  projectId: "biomedicalengineerbook",
+  storageBucket: "biomedicalengineerbook.firebasestorage.app",
+  messagingSenderId: "272734528841",
+  appId: "1:272734528841:web:f78d71b51dbb1b4a4d6698",
+  measurementId: "G-2316CQ7T2W"
+};
+let fbAuth = null, fbDb = null, currentUser = null, unsubscribeProg = null;
+let idxAuthMode = 'login';
+
+function bootFirebase(){
+  try{
+    firebase.initializeApp(FIREBASE_CONFIG);
+  }catch(e){
+    console.error('Firebase 초기화 실패', e);
+    return;
+  }
+  fbAuth = firebase.auth();
+  fbDb = firebase.firestore();
+  fbAuth.onAuthStateChanged(user => {
+    if(user){
+      currentUser = user;
+      renderAuthStatus();
+      subscribeProgress();
+    } else {
+      currentUser = null;
+      if(unsubscribeProg){ unsubscribeProg(); unsubscribeProg = null; }
+      renderAuthStatus();
+    }
+  });
+}
+
+function renderAuthStatus(){
+  const el = document.getElementById('auth-status');
+  if(!el) return;
+  if(currentUser){
+    el.innerHTML = '<span>' + (currentUser.email || '') + '</span><button onclick="idxLogout()">로그아웃</button>';
+    document.getElementById('auth-panel').classList.remove('show');
+  } else {
+    el.innerHTML = '<button onclick="toggleAuthPanel()">🔑 로그인</button>';
+  }
+}
+
+function toggleAuthPanel(){
+  document.getElementById('auth-panel').classList.toggle('show');
+}
+
+function idxToggleAuthMode(){
+  idxAuthMode = idxAuthMode === 'login' ? 'signup' : 'login';
+  document.getElementById('idx-auth-submit-btn').textContent = idxAuthMode === 'login' ? '로그인' : '가입하기';
+  document.getElementById('idx-auth-switch').textContent = idxAuthMode === 'login' ? '계정이 없다면 회원가입' : '이미 계정이 있다면 로그인';
+}
+
+function idxFirebaseErrorText(e){
+  const map = {
+    'auth/user-not-found': '가입되지 않은 이메일입니다.',
+    'auth/wrong-password': '비밀번호가 올바르지 않습니다.',
+    'auth/invalid-credential': '이메일 또는 비밀번호가 올바르지 않습니다.',
+    'auth/email-already-in-use': '이미 가입된 이메일입니다.',
+    'auth/invalid-email': '이메일 형식이 올바르지 않습니다.',
+    'auth/weak-password': '비밀번호가 너무 약합니다 (6자 이상).'
+  };
+  return map[e.code] || (e.message || '오류가 발생했습니다.');
+}
+
+function idxSubmitAuth(){
+  const email = document.getElementById('idx-auth-email').value.trim();
+  const pw = document.getElementById('idx-auth-pw').value;
+  const msgEl = document.getElementById('auth-panel-msg');
+  msgEl.classList.remove('show');
+  if(!email || pw.length < 6){
+    msgEl.textContent = '이메일과 6자 이상 비밀번호를 입력해주세요.';
+    msgEl.classList.add('show');
+    return;
+  }
+  const action = idxAuthMode === 'login'
+    ? fbAuth.signInWithEmailAndPassword(email, pw)
+    : fbAuth.createUserWithEmailAndPassword(email, pw);
+  action.catch(e => {
+    msgEl.textContent = idxFirebaseErrorText(e);
+    msgEl.classList.add('show');
+  });
+}
+
+function idxLogout(){
+  if(fbAuth) fbAuth.signOut();
+}
+
+function progressDocRef(){
+  return fbDb.collection('users').doc(currentUser.uid).collection('meta').doc('progress');
+}
+
+function mergeProg(a, b){
+  const out = {};
+  const keys = new Set([...Object.keys(a || {}), ...Object.keys(b || {})]);
+  keys.forEach(k => {
+    const av = (a && a[k]) || {};
+    const bv = (b && b[k]) || {};
+    out[k] = { fc: !!(av.fc || bv.fc), quiz: !!(av.quiz || bv.quiz) };
+  });
+  return out;
+}
+
+function subscribeProgress(){
+  if(unsubscribeProg) unsubscribeProg();
+  unsubscribeProg = progressDocRef().onSnapshot(snap => {
+    const cloud = (snap.exists && snap.data().data) || {};
+    const merged = mergeProg(prog, cloud);
+    const mergedStr = JSON.stringify(merged);
+    prog = merged;
+    saveProg();
+    renderSidebar();
+    if(!currentUnit) showDashboard();
+    if(mergedStr !== JSON.stringify(cloud)){
+      progressDocRef().set({ data: merged }, { merge:true }).catch(e => console.error('진도 저장 실패', e));
+    }
+  }, err => console.error('진도 동기화 오류', err));
+}
+
+function syncProgressToCloud(){
+  if(!currentUser || !fbDb) return;
+  progressDocRef().set({ data: prog }, { merge:true }).catch(e => console.error('진도 저장 실패', e));
+}
+
 // ─── INIT ───────────────────────────────────────────────────────────────────
 loadProg();
 renderSidebar();
 renderTopBar();
+showDashboard();
+bootFirebase();
 </script>
 </body>
 </html>

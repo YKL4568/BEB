@@ -29,6 +29,7 @@
   --success:#10B981;
   --success-bg:#ECFDF5;
 }
+html{overflow-y:scroll;scrollbar-gutter:stable}
 body{font-family:'Noto Sans KR',sans-serif;background:var(--content-bg);color:var(--text-main);min-height:100vh}
 a{color:inherit;text-decoration:none}
 button{font-family:inherit}
@@ -193,20 +194,26 @@ function saveItems() { localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
 function genId() { return 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7); }
 
 // ─── FIREBASE (계정 로그인 + 클라우드 동기화) ─────────────────────────────────
-const FIREBASE_CONFIG_KEY = 'mge_firebase_config';
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCEJwszSu4cWLZwflkDShCK44M9jkhDpLk",
+  authDomain: "biomedicalengineerbook.firebaseapp.com",
+  projectId: "biomedicalengineerbook",
+  storageBucket: "biomedicalengineerbook.firebasestorage.app",
+  messagingSenderId: "272734528841",
+  appId: "1:272734528841:web:f78d71b51dbb1b4a4d6698",
+  measurementId: "G-2316CQ7T2W"
+};
 const MIGRATION_FLAG_KEY = 'mge_migrated_v1';
 let db = null, auth = null, currentUser = null, unsubscribeItems = null;
 let authMode = 'login'; // 'login' | 'signup'
 
 function bootFirebase() {
-  const raw = localStorage.getItem(FIREBASE_CONFIG_KEY);
-  if (!raw) { renderSetupScreen(); return; }
-  let cfg;
-  try { cfg = JSON.parse(raw); } catch (e) { renderSetupScreen('저장된 설정을 읽을 수 없습니다. 다시 설정해주세요.'); return; }
   try {
-    firebase.initializeApp(cfg);
+    firebase.initializeApp(FIREBASE_CONFIG);
   } catch (e) {
-    renderSetupScreen('Firebase 초기화 실패: ' + e.message);
+    document.getElementById('auth-status').innerHTML = '';
+    document.getElementById('page-content').innerHTML =
+      `<div class="card"><div class="card-title">Firebase 초기화 실패</div><div class="msg err">${escapeHtml(e.message)}</div></div>`;
     return;
   }
   auth = firebase.auth();
@@ -224,45 +231,6 @@ function bootFirebase() {
   });
 }
 
-function renderSetupScreen(errorMsg) {
-  document.getElementById('auth-status').innerHTML = '';
-  document.getElementById('page-content').innerHTML = `
-    <div class="card setup-wrap">
-      <div class="card-title">🔥 Firebase 연결 설정 (최초 1회)</div>
-      <div class="card-sub">Firebase 콘솔에서 만든 프로젝트의 설정 값(firebaseConfig)을 붙여넣으면 이 계정으로 로그인한 모든 기기에서 데이터가 동기화됩니다.</div>
-      ${errorMsg ? `<div class="msg err">${escapeHtml(errorMsg)}</div>` : ''}
-      <textarea id="fb-config-input" class="import-textarea" placeholder='{ apiKey: "...", authDomain: "...", projectId: "...", ... }'></textarea>
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="saveFirebaseConfig()">저장하고 계속하기</button>
-      </div>
-    </div>
-  `;
-}
-
-function saveFirebaseConfig() {
-  const raw = document.getElementById('fb-config-input').value.trim();
-  if (!raw) return;
-  let cfg;
-  try {
-    cfg = (0, eval)('(' + raw + ')');
-  } catch (e) {
-    renderSetupScreen('설정 값을 해석할 수 없습니다. Firebase 콘솔에서 복사한 { ... } 객체 전체를 그대로 붙여넣어 주세요.');
-    return;
-  }
-  if (!cfg || !cfg.apiKey || !cfg.projectId) {
-    renderSetupScreen('apiKey, projectId 등 필수 값이 없습니다.');
-    return;
-  }
-  localStorage.setItem(FIREBASE_CONFIG_KEY, JSON.stringify(cfg));
-  location.reload();
-}
-
-function resetFirebaseConfig() {
-  if (auth) { try { auth.signOut(); } catch (e) {} }
-  localStorage.removeItem(FIREBASE_CONFIG_KEY);
-  location.reload();
-}
-
 function renderAuthScreen(errorMsg) {
   document.getElementById('page-content').innerHTML = `
     <div class="card auth-wrap">
@@ -275,7 +243,6 @@ function renderAuthScreen(errorMsg) {
       </div>
       <div class="btn-row">
         <button class="btn btn-ghost btn-sm" onclick="toggleAuthMode()">${authMode === 'login' ? '계정이 없다면 회원가입' : '이미 계정이 있다면 로그인'}</button>
-        <button class="btn btn-ghost btn-sm" onclick="resetFirebaseConfig()">Firebase 설정 다시 하기</button>
       </div>
     </div>
   `;
