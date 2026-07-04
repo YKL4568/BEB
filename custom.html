@@ -14,7 +14,7 @@
   --sidebar-bg-deep:#141F38;
   --accent:#60A5FA;
   --accent-bg:rgba(96,165,250,.14);
-  --content-bg:#F8F5EF;
+  --content-bg:#FDFCF8;
   --card-bg:#FFFFFF;
   --card-border:rgba(15,23,42,.06);
   --card-shadow:0 1px 2px rgba(16,24,40,.04),0 4px 12px rgba(16,24,40,.05);
@@ -36,7 +36,7 @@ button{font-family:inherit}
 
 /* TOP BAR */
 #topbar{background:linear-gradient(180deg,var(--sidebar-bg) 0%,var(--sidebar-bg-deep) 100%);color:#fff;position:sticky;top:0;z-index:20;box-shadow:0 2px 10px rgba(0,0,0,.15)}
-#topbar-inner{max-width:1080px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+#topbar-inner{max-width:1080px;margin:0 auto;height:58px;box-sizing:border-box;padding:0 20px;display:flex;align-items:center;gap:20px;flex-wrap:nowrap}
 #back-link{font-size:13px;color:#CBD5E1;font-weight:600;padding:6px 10px;border-radius:7px;transition:background .12s}
 #back-link:hover{background:rgba(255,255,255,.08);color:#fff}
 #topbar-inner h1{font-size:16px;font-weight:800;flex:1;min-width:120px}
@@ -64,6 +64,7 @@ button{font-family:inherit}
 .form-row input[type=text]:focus,.form-row input[type=password]:focus,.form-row input[type=email]:focus,.form-row textarea:focus,.form-row select:focus{outline:none;border-color:var(--accent)}
 .form-row textarea{resize:vertical;min-height:64px;line-height:1.5}
 .form-grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
 .choice-input-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .choice-input-row input[type=radio]{width:18px;height:18px;flex-shrink:0;accent-color:var(--accent)}
 .choice-input-row input[type=text]{flex:1}
@@ -98,6 +99,10 @@ button{font-family:inherit}
 .item-text{font-size:14.5px;font-weight:600;line-height:1.5;margin-bottom:4px;overflow-wrap:anywhere}
 .item-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--text-muted)}
 .tag-chip{background:#EEF2F9;color:#1C2D4E;padding:2px 8px;border-radius:10px;font-weight:600;font-size:12px}
+.batch-chip{background:#F3F0FF;color:#5B3FBA}
+.list-group{margin-bottom:6px}
+.list-group-title{font-size:13px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.3px;padding:14px 4px 6px;border-bottom:1px solid var(--section-line);display:flex;align-items:center;gap:8px}
+.list-group-count{font-size:11.5px;font-weight:600;color:#9CA3AF;text-transform:none;letter-spacing:0}
 .stat-chip{padding:2px 8px;border-radius:10px;font-weight:600;font-size:12px}
 .stat-wrong{background:var(--danger-bg);color:#991B1B}
 .stat-new{background:#EEF2F9;color:#374151}
@@ -111,6 +116,9 @@ button{font-family:inherit}
 /* REVIEW SESSION */
 .review-setup{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
 .review-setup select{font-size:13.5px;padding:8px 10px;border:1.5px solid #E5E7EB;border-radius:8px}
+.review-setup.review-filters select{flex:1;min-width:120px}
+.review-setup.review-scope{gap:20px}
+.radio-row{display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;cursor:pointer}
 .review-progress{font-size:13px;color:var(--text-muted);text-align:center;margin-bottom:14px}
 #session-wrap{display:flex;flex-direction:column;align-items:center;gap:18px}
 .fc-card-outer{width:100%;max-width:560px;perspective:1000px}
@@ -122,13 +130,21 @@ button{font-family:inherit}
 .fc-label{font-size:11px;font-weight:700;letter-spacing:.1em;opacity:.5;margin-bottom:12px}
 .fc-text{font-size:17px;font-weight:600;line-height:1.6}
 .fc-hint{font-size:12px;color:var(--text-muted);margin-top:8px}
-.grade-row{display:flex;gap:12px}
-.grade-btn{padding:12px 26px;border-radius:9px;border:none;font-weight:700;font-size:14.5px;cursor:pointer;transition:all .12s}
-.grade-btn.bad{background:var(--danger-bg);color:#991B1B}
-.grade-btn.bad:hover{background:#FEE2E2}
-.grade-btn.good{background:var(--success-bg);color:#065F46}
-.grade-btn.good:hover{background:#D1FAE5}
+.grade-row{display:flex;gap:16px;align-items:center}
+.grade-icon-btn{
+  width:56px;height:56px;border-radius:50%;font-size:24px;cursor:pointer;transition:all .15s;
+  display:flex;align-items:center;justify-content:center;background:var(--card-bg);
+}
+.grade-icon-btn.star{border:2.5px solid #F59E0B;color:#F59E0B}
+.grade-icon-btn.star:hover,.grade-icon-btn.star.filled{background:#F59E0B;color:#fff}
+.grade-icon-btn.check{border:2.5px solid #1a1a2e;color:#1a1a2e}
+.grade-icon-btn.check:hover,.grade-icon-btn.check.filled{background:#1a1a2e;color:#fff}
+.grade-kbd-hint{font-size:11.5px;color:var(--text-muted);margin-top:6px}
+.skip-link{font-size:12.5px;color:var(--text-muted);text-decoration:none;cursor:pointer;margin-top:12px}
+.skip-link:hover{color:#1a1a2e}
 #quiz-session-wrap{max-width:640px;width:100%}
+#session-next-area{margin-top:26px;text-align:center}
+#session-next-area .grade-row{justify-content:center}
 .q-text{font-size:15.5px;font-weight:600;margin-bottom:14px;line-height:1.6}
 .choices{display:flex;flex-direction:column;gap:8px}
 .choice-btn{text-align:left;padding:12px 14px;border-radius:8px;border:1.5px solid #E5E7EB;background:var(--card-bg);font-size:14.5px;cursor:pointer;transition:all .12s;line-height:1.5}
@@ -137,6 +153,9 @@ button{font-family:inherit}
 .choice-btn.wrong{border-color:#EF4444;background:var(--danger-bg);color:#991B1B}
 .choice-btn.reveal-correct{border-color:#10B981;background:var(--success-bg)}
 .explanation{margin-top:12px;padding:12px 14px;background:#F0F9FF;border-left:3px solid var(--accent);border-radius:0 6px 6px 0;font-size:13.5px;color:#0C4A6E;line-height:1.6}
+.session-result{margin-top:10px;padding:10px 14px;border-radius:8px;font-weight:700;font-size:14px}
+.session-result.ok{background:var(--success-bg);color:#065F46}
+.session-result.bad{background:var(--danger-bg);color:#991B1B}
 .session-next{margin-top:6px}
 .session-summary{text-align:center;padding:32px 20px}
 .session-summary .big{font-size:30px;font-weight:800;color:var(--table-header);margin-bottom:8px}
@@ -149,12 +168,16 @@ button{font-family:inherit}
 .msg.err{background:var(--danger-bg);color:#991B1B}
 
 @media(max-width:768px){
-  #topbar-inner{padding:12px 14px}
-  #topbar-inner h1{font-size:14.5px;order:1;width:100%}
-  #back-link{order:0}
-  #page-tabs{order:2;width:100%}
-  .ptab{flex:1;padding:10px 6px;font-size:12.5px;text-align:center}
+  #topbar-inner{height:auto;min-height:52px;padding:8px 12px;flex-wrap:nowrap;gap:6px}
+  #topbar-inner h1{font-size:18px;flex:0 0 auto;min-width:0}
+  #back-link{font-size:18px;padding:6px 8px;flex:0 0 auto}
+  #page-tabs{flex:0 0 auto;gap:2px}
+  .ptab{padding:8px 9px;font-size:16px}
+  #auth-status{gap:4px}
+  #auth-status button{padding:6px 8px}
+  .label-text{display:none}
   .form-grid2{grid-template-columns:1fr}
+  .form-grid3{grid-template-columns:1fr}
   .item-row{flex-wrap:wrap}
   .fc-card{min-height:180px}
 }
@@ -164,12 +187,12 @@ button{font-family:inherit}
 
 <header id="topbar">
   <div id="topbar-inner">
-    <a id="back-link" href="index.html">← 교재로 돌아가기</a>
-    <h1>내 문제 &amp; 복습</h1>
+    <a id="back-link" href="index.html" title="교재로 돌아가기">← <span class="label-text">교재로 돌아가기</span></a>
+    <h1>📘 <span class="label-text">내 문제 &amp; 복습</span></h1>
     <nav id="page-tabs">
-      <button class="ptab" data-tab="review" onclick="switchPageTab('review')">🎯 오늘의 복습</button>
-      <button class="ptab" data-tab="list" onclick="switchPageTab('list')">📋 내 목록</button>
-      <button class="ptab" data-tab="add" onclick="switchPageTab('add')">➕ 등록</button>
+      <button class="ptab" data-tab="review" onclick="switchPageTab('review')" title="오늘의 복습">🎯 <span class="label-text">오늘의 복습</span></button>
+      <button class="ptab" data-tab="list" onclick="switchPageTab('list')" title="내 목록">📋 <span class="label-text">내 목록</span></button>
+      <button class="ptab" data-tab="add" onclick="switchPageTab('add')" title="등록">➕ <span class="label-text">등록</span></button>
     </nav>
     <div id="auth-status"></div>
   </div>
@@ -281,7 +304,7 @@ function logout() {
 
 function startAppForUser() {
   document.getElementById('auth-status').innerHTML =
-    `<span>${escapeHtml(currentUser.email || '')}</span><button class="btn btn-ghost btn-sm" onclick="logout()">로그아웃</button>`;
+    `<span class="label-text">${escapeHtml(currentUser.email || '')}</span><button class="btn btn-ghost btn-sm" onclick="logout()" title="로그아웃">🚪<span class="label-text"> 로그아웃</span></button>`;
   document.querySelectorAll('.ptab').forEach(b => b.classList.toggle('active', b.dataset.tab === currentPageTab));
   subscribeItems();
   offerLegacyMigrationIfNeeded();
@@ -329,17 +352,19 @@ function normalizeItem(raw) {
     id: raw.id || genId(),
     type: raw.type === 'quiz' ? 'quiz' : 'flashcard',
     tag: (raw.tag || '').trim(),
+    batch: (raw.batch || '').trim(),
     starred: !!raw.starred,
+    confused: !!raw.confused,
     createdAt: raw.createdAt || Date.now(),
     timesShown: raw.timesShown || 0,
     wrongCount: raw.wrongCount || 0,
     lastSeenAt: raw.lastSeenAt || null
   };
+  base.explanation = raw.explanation || '';
   if (base.type === 'quiz') {
     base.text = raw.text || raw.q || '';
     base.choices = Array.isArray(raw.choices) && raw.choices.length === 4 ? raw.choices : ['', '', '', ''];
     base.answer = [1, 2, 3, 4].includes(Number(raw.answer)) ? Number(raw.answer) : 1;
-    base.explanation = raw.explanation || '';
   } else {
     base.q = raw.q || raw.text || '';
     base.a = raw.a || raw.answer_text || '';
@@ -360,11 +385,17 @@ function priorityScore(item) {
   const starBonus = item.starred ? 0.25 : 0;
   return wrongRate * 0.5 + staleScore * 0.35 + starBonus;
 }
+function isConfusingItem(item) {
+  const shown = item.timesShown || 0;
+  const wrongRate = shown > 0 ? (item.wrongCount || 0) / shown : 0;
+  return (shown > 0 && wrongRate >= 0.34) || !!item.confused;
+}
 function reasonTags(item) {
   const reasons = [];
   const shown = item.timesShown || 0;
   const wrongRate = shown > 0 ? (item.wrongCount || 0) / shown : 0;
   if (shown > 0 && wrongRate >= 0.34) reasons.push('자주 틀림');
+  if (item.confused) reasons.push('헷갈림 표시');
   if (item.starred) reasons.push('중요 표시');
   if (staleDays(item) >= 7) reasons.push(item.timesShown ? '학습한지 오래됨' : '아직 안 봄');
   if (!reasons.length) reasons.push('복습 추천');
@@ -396,9 +427,10 @@ function renderAddTab() {
     <div class="card">
       <div class="card-title">📋 표로 붙여넣기 (엑셀 / 구글시트) — 추천</div>
       <div class="card-sub">엑셀이나 구글시트에 아래 순서대로 열을 만들어 채운 뒤, 셀 범위를 그대로 복사(Ctrl+C)해서 아래 칸에 붙여넣으면 됩니다. 파일을 따로 저장할 필요 없이 복사·붙여넣기만 하면 되는 것이 가장 빠릅니다.</div>
-      <div class="sample-box">열 순서: 유형(flashcard/quiz) | 질문 | 답(플래시카드용) | 보기1 | 보기2 | 보기3 | 보기4 | 정답(1~4) | 해설 | 태그 | 중요(Y/N)
+      <div class="sample-box">열 순서: 유형(flashcard/quiz) | 질문 | 답(플래시카드용) | 보기1 | 보기2 | 보기3 | 보기4 | 정답(1~4) | 해설 | 태그(과목) | 분류(회차 등) | 중요(Y/N)
 
-※ 플래시카드 행은 "보기1~4, 정답" 칸을 비워두고, 예상문제 행은 "답(플래시카드용)" 칸을 비워두면 됩니다.
+※ 플래시카드 행은 "보기1~4, 정답" 칸을 비워두고, 예상문제 행은 "답(플래시카드용)" 칸을 비워두면 됩니다. 해설은 두 유형 모두 사용할 수 있습니다.
+※ 분류는 "2024년 기출 1회차"처럼 태그와 별도로 시험 회차·출처 등을 구분할 때 씁니다. 비워둬도 됩니다.
 ※ 첫 줄에 위 열 이름을 헤더로 넣어도 자동으로 인식해 건너뜁니다.</div>
       <div class="btn-row">
         <button class="btn btn-ghost btn-sm" onclick="downloadTemplateCsv()">⬇ 빈 템플릿(.csv) 받기</button>
@@ -414,8 +446,8 @@ function renderAddTab() {
       <div class="card-title">일괄 등록 (JSON 붙여넣기) — 고급</div>
       <div class="card-sub">AI로 생성했거나 이미 JSON 형태로 준비된 데이터가 있다면 이 방식이 더 정확합니다. 아래 형식의 JSON 배열을 붙여넣고 등록하세요. 이미 등록된 항목은 그대로 두고 새 항목만 추가됩니다.</div>
       <div class="sample-box">${escapeHtml(JSON.stringify([
-        { type: 'flashcard', q: '심전도에서 P파가 의미하는 것은?', a: '심방의 탈분극', tag: '기초의학' },
-        { type: 'quiz', text: '다음 중 심전도 P파가 나타내는 것은?', choices: ['심방 탈분극', '심실 탈분극', '심실 재분극', '방실 전도 지연'], answer: 1, explanation: 'P파는 심방의 탈분극을 의미한다.', tag: '기초의학' }
+        { type: 'flashcard', q: '심전도에서 P파가 의미하는 것은?', a: '심방의 탈분극', explanation: 'P파는 동방결절에서 시작된 흥분이 심방 전체로 퍼지는 과정을 반영한다.', tag: '기초의학', batch: '2024년 기출 1회차' },
+        { type: 'quiz', text: '다음 중 심전도 P파가 나타내는 것은?', choices: ['심방 탈분극', '심실 탈분극', '심실 재분극', '방실 전도 지연'], answer: 1, explanation: 'P파는 심방의 탈분극을 의미한다.', tag: '기초의학', batch: '2024년 기출 1회차' }
       ], null, 2))}</div>
       <textarea id="bulk-import-text" class="import-textarea" placeholder="여기에 JSON 배열을 붙여넣으세요"></textarea>
       <div class="btn-row">
@@ -436,6 +468,11 @@ function setAddType(t) {
   renderAddForm();
 }
 
+function batchDatalistOptions() {
+  const batches = Array.from(new Set(items.map(it => it.batch).filter(Boolean))).sort();
+  return `<datalist id="batch-options">${batches.map(b => `<option value="${escapeHtml(b)}">`).join('')}</datalist>`;
+}
+
 function renderAddForm(prefill) {
   const area = document.getElementById('add-form-area');
   const p = prefill || {};
@@ -443,10 +480,13 @@ function renderAddForm(prefill) {
     area.innerHTML = `
       <div class="form-row"><label>질문 (앞면)</label><textarea id="f-q">${escapeHtml(p.q || '')}</textarea></div>
       <div class="form-row"><label>답 (뒷면)</label><textarea id="f-a">${escapeHtml(p.a || '')}</textarea></div>
-      <div class="form-grid2">
-        <div class="form-row"><label>태그 (선택)</label><input type="text" id="f-tag" value="${escapeHtml(p.tag || '')}" placeholder="예: 전기전자, 3단원"></div>
+      <div class="form-row"><label>해설 (선택)</label><textarea id="f-exp">${escapeHtml(p.explanation || '')}</textarea></div>
+      <div class="form-grid3">
+        <div class="form-row"><label>태그 (과목, 선택)</label><input type="text" id="f-tag" value="${escapeHtml(p.tag || '')}" placeholder="예: 전기전자, 3단원"></div>
+        <div class="form-row"><label>분류 (회차 등, 선택)</label><input type="text" id="f-batch" list="batch-options" value="${escapeHtml(p.batch || '')}" placeholder="예: 2024년 기출 1회차"></div>
         <div class="form-row" style="justify-content:center"><label>&nbsp;</label><div class="check-row"><input type="checkbox" id="f-star" ${p.starred ? 'checked' : ''}> 중요 표시</div></div>
       </div>
+      ${batchDatalistOptions()}
       <div class="btn-row">
         <button class="btn btn-primary" onclick="submitFlashcardForm()">${editingId ? '수정 완료' : '플래시카드 등록'}</button>
         ${editingId ? '<button class="btn btn-ghost" onclick="cancelEdit()">취소</button>' : ''}
@@ -467,10 +507,12 @@ function renderAddForm(prefill) {
         `).join('')}
       </div>
       <div class="form-row"><label>해설 (선택)</label><textarea id="q-exp">${escapeHtml(p.explanation || '')}</textarea></div>
-      <div class="form-grid2">
-        <div class="form-row"><label>태그 (선택)</label><input type="text" id="q-tag" value="${escapeHtml(p.tag || '')}" placeholder="예: 전기전자, 3단원"></div>
+      <div class="form-grid3">
+        <div class="form-row"><label>태그 (과목, 선택)</label><input type="text" id="q-tag" value="${escapeHtml(p.tag || '')}" placeholder="예: 전기전자, 3단원"></div>
+        <div class="form-row"><label>분류 (회차 등, 선택)</label><input type="text" id="q-batch" list="batch-options" value="${escapeHtml(p.batch || '')}" placeholder="예: 2024년 기출 1회차"></div>
         <div class="form-row" style="justify-content:center"><label>&nbsp;</label><div class="check-row"><input type="checkbox" id="q-star" ${p.starred ? 'checked' : ''}> 중요 표시</div></div>
       </div>
+      ${batchDatalistOptions()}
       <div class="btn-row">
         <button class="btn btn-primary" onclick="submitQuizForm()">${editingId ? '수정 완료' : '예상문제 등록'}</button>
         ${editingId ? '<button class="btn btn-ghost" onclick="cancelEdit()">취소</button>' : ''}
@@ -490,16 +532,18 @@ function showMsg(id, text, ok) {
 function submitFlashcardForm() {
   const q = document.getElementById('f-q').value.trim();
   const a = document.getElementById('f-a').value.trim();
+  const explanation = document.getElementById('f-exp').value.trim();
   const tag = document.getElementById('f-tag').value.trim();
+  const batch = document.getElementById('f-batch').value.trim();
   const starred = document.getElementById('f-star').checked;
   if (!q || !a) { showMsg('add-msg', '질문과 답을 모두 입력해주세요.', false); return; }
   let savedItem;
   if (editingId) {
     const idx = items.findIndex(it => it.id === editingId);
-    if (idx > -1) { items[idx] = Object.assign({}, items[idx], { q, a, tag, starred }); savedItem = items[idx]; }
+    if (idx > -1) { items[idx] = Object.assign({}, items[idx], { q, a, explanation, tag, batch, starred }); savedItem = items[idx]; }
     editingId = null;
   } else {
-    savedItem = normalizeItem({ type: 'flashcard', q, a, tag, starred });
+    savedItem = normalizeItem({ type: 'flashcard', q, a, explanation, tag, batch, starred });
     items.push(savedItem);
   }
   saveItems();
@@ -514,16 +558,17 @@ function submitQuizForm() {
   const answerEl = document.querySelector('input[name="q-answer"]:checked');
   const explanation = document.getElementById('q-exp').value.trim();
   const tag = document.getElementById('q-tag').value.trim();
+  const batch = document.getElementById('q-batch').value.trim();
   const starred = document.getElementById('q-star').checked;
   if (!text || choices.some(c => !c) || !answerEl) { showMsg('add-msg', '문제, 보기 4개, 정답을 모두 입력해주세요.', false); return; }
   const answer = parseInt(answerEl.value);
   let savedItem;
   if (editingId) {
     const idx = items.findIndex(it => it.id === editingId);
-    if (idx > -1) { items[idx] = Object.assign({}, items[idx], { text, choices, answer, explanation, tag, starred }); savedItem = items[idx]; }
+    if (idx > -1) { items[idx] = Object.assign({}, items[idx], { text, choices, answer, explanation, tag, batch, starred }); savedItem = items[idx]; }
     editingId = null;
   } else {
-    savedItem = normalizeItem({ type: 'quiz', text, choices, answer, explanation, tag, starred });
+    savedItem = normalizeItem({ type: 'quiz', text, choices, answer, explanation, tag, batch, starred });
     items.push(savedItem);
   }
   saveItems();
@@ -608,10 +653,10 @@ function csvEscape(s) {
 }
 
 function downloadTemplateCsv() {
-  const header = ['유형', '질문', '답(플래시카드)', '보기1', '보기2', '보기3', '보기4', '정답(1-4)', '해설', '태그', '중요(Y/N)'];
+  const header = ['유형', '질문', '답(플래시카드)', '보기1', '보기2', '보기3', '보기4', '정답(1-4)', '해설', '태그', '분류', '중요(Y/N)'];
   const sample = [
-    ['flashcard', '심전도에서 P파가 의미하는 것은?', '심방의 탈분극', '', '', '', '', '', '', '기초의학', ''],
-    ['quiz', '다음 중 심전도 P파가 나타내는 것은?', '', '심방 탈분극', '심실 탈분극', '심실 재분극', '방실 전도 지연', '1', 'P파는 심방의 탈분극을 의미한다.', '기초의학', 'Y']
+    ['flashcard', '심전도에서 P파가 의미하는 것은?', '심방의 탈분극', '', '', '', '', '', 'P파는 동방결절에서 시작된 흥분이 심방 전체로 퍼지는 과정을 반영한다.', '기초의학', '2024년 기출 1회차', ''],
+    ['quiz', '다음 중 심전도 P파가 나타내는 것은?', '', '심방 탈분극', '심실 탈분극', '심실 재분극', '방실 전도 지연', '1', 'P파는 심방의 탈분극을 의미한다.', '기초의학', '2024년 기출 1회차', 'Y']
   ];
   const csv = [header, ...sample].map(r => r.map(csvEscape).join(',')).join('\r\n');
   const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
@@ -637,17 +682,17 @@ function handleTableImport() {
     const r = rows[i];
     if (!r || !r.some(c => c && c.trim())) continue;
     const cells = r.map(c => (c || '').trim());
-    const [typeCell, question, answerText, c1, c2, c3, c4, correct, explanation, tag, starredCell] = cells;
+    const [typeCell, question, answerText, c1, c2, c3, c4, correct, explanation, tag, batch, starredCell] = cells;
     const type = parseTypeCell(typeCell);
     let raw2;
     if (type === 'quiz') {
       const choices = [c1, c2, c3, c4];
       const ans = parseInt(correct);
       if (!question || choices.some(c => !c) || !(ans >= 1 && ans <= 4)) { skipped++; continue; }
-      raw2 = { type: 'quiz', text: question, choices, answer: ans, explanation, tag, starred: parseStarCell(starredCell) };
+      raw2 = { type: 'quiz', text: question, choices, answer: ans, explanation, tag, batch, starred: parseStarCell(starredCell) };
     } else {
       if (!question || !answerText) { skipped++; continue; }
-      raw2 = { type: 'flashcard', q: question, a: answerText, tag, starred: parseStarCell(starredCell) };
+      raw2 = { type: 'flashcard', q: question, a: answerText, explanation, tag, batch, starred: parseStarCell(starredCell) };
     }
     const norm = normalizeItem(raw2);
     items.push(norm);
@@ -705,24 +750,18 @@ function getFilteredItems() {
   });
 }
 
-function renderListBody() {
-  const body = document.getElementById('list-body');
-  if (!body) return;
-  const filtered = getFilteredItems();
-  if (!filtered.length) {
-    body.innerHTML = `<div class="empty-hint">등록된 항목이 없습니다. "➕ 등록" 탭에서 추가해보세요.</div>`;
-    return;
-  }
-  body.innerHTML = filtered.slice().sort((a, b) => b.createdAt - a.createdAt).map(it => {
-    const preview = it.type === 'quiz' ? it.text : it.q;
-    const wrongRate = it.timesShown > 0 ? Math.round((it.wrongCount / it.timesShown) * 100) : null;
-    return `<div class="item-row">
+function renderItemRow(it) {
+  const preview = it.type === 'quiz' ? it.text : it.q;
+  const wrongRate = it.timesShown > 0 ? Math.round((it.wrongCount / it.timesShown) * 100) : null;
+  return `<div class="item-row">
       <div class="item-type-icon">${it.type === 'quiz' ? '📝' : '🗂'}</div>
       <div class="item-body">
         <div class="item-text">${escapeHtml(preview)}</div>
         <div class="item-meta">
           ${it.tag ? `<span class="tag-chip">${escapeHtml(it.tag)}</span>` : ''}
+          ${it.batch ? `<span class="tag-chip batch-chip">${escapeHtml(it.batch)}</span>` : ''}
           ${wrongRate !== null ? `<span class="stat-chip ${wrongRate >= 34 ? 'stat-wrong' : 'stat-new'}">오답률 ${wrongRate}% (${it.timesShown}회)</span>` : `<span class="stat-chip stat-new">아직 안 봄</span>`}
+          ${it.confused ? `<span class="stat-chip stat-wrong">헷갈림 표시</span>` : ''}
           ${it.lastSeenAt ? `<span>마지막 학습 ${Math.floor(staleDays(it))}일 전</span>` : ''}
         </div>
       </div>
@@ -731,6 +770,33 @@ function renderListBody() {
         <button class="icon-btn" title="수정" onclick="editItem('${it.id}')">✏️</button>
         <button class="icon-btn" title="삭제" onclick="deleteItem('${it.id}')">🗑️</button>
       </div>
+    </div>`;
+}
+
+function renderListBody() {
+  const body = document.getElementById('list-body');
+  if (!body) return;
+  const filtered = getFilteredItems();
+  if (!filtered.length) {
+    body.innerHTML = `<div class="empty-hint">등록된 항목이 없습니다. "➕ 등록" 탭에서 추가해보세요.</div>`;
+    return;
+  }
+  const groups = new Map();
+  filtered.forEach(it => {
+    const key = it.tag || '';
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(it);
+  });
+  const groupKeys = Array.from(groups.keys()).sort((a, b) => {
+    if (!a) return 1;
+    if (!b) return -1;
+    return a.localeCompare(b, 'ko');
+  });
+  body.innerHTML = groupKeys.map(key => {
+    const groupItems = groups.get(key).slice().sort((a, b) => b.createdAt - a.createdAt);
+    return `<div class="list-group">
+      <div class="list-group-title">${key ? escapeHtml(key) : '태그 없음'} <span class="list-group-count">${groupItems.length}개</span></div>
+      ${groupItems.map(renderItemRow).join('')}
     </div>`;
   }).join('');
 }
@@ -778,26 +844,71 @@ let reviewCorrect = 0;
 let reviewWrong = 0;
 let reviewCount = 15;
 let reviewActive = false;
+let reviewFilterType = 'all';
+let reviewFilterTag = 'all';
+let reviewFilterBatch = 'all';
+let reviewScope = 'all'; // 'all' | 'confusing'
+
+function getReviewPool() {
+  return items.filter(it => {
+    if (reviewFilterType !== 'all' && it.type !== reviewFilterType) return false;
+    if (reviewFilterTag !== 'all' && it.tag !== reviewFilterTag) return false;
+    if (reviewFilterBatch !== 'all' && it.batch !== reviewFilterBatch) return false;
+    if (reviewScope === 'confusing' && !isConfusingItem(it)) return false;
+    return true;
+  });
+}
 
 function renderReviewTab() {
   reviewActive = false;
+  quizAnswered = false;
+  document.removeEventListener('keydown', handleSessionKeydown);
   const el = document.getElementById('page-content');
   if (!items.length) {
     el.innerHTML = `<div class="card"><div class="empty-hint">등록된 항목이 없습니다. 먼저 "➕ 등록" 탭에서 문제나 카드를 추가해주세요.</div></div>`;
     return;
   }
-  const maxN = Math.min(items.length, 40);
+  const tags = Array.from(new Set(items.map(it => it.tag).filter(Boolean))).sort();
+  const batches = Array.from(new Set(items.map(it => it.batch).filter(Boolean))).sort();
+  const pool = getReviewPool();
+  const maxN = Math.min(pool.length, 40);
+  if (reviewCount > maxN) reviewCount = maxN;
+  const countOptions = [5, 10, 15, 20, 30, maxN]
+    .filter((v, i, a) => v <= maxN && v > 0 && a.indexOf(v) === i)
+    .sort((a, b) => a - b)
+    .map(n => `<option value="${n}" ${n === reviewCount ? 'selected' : ''}>${n}개</option>`).join('');
   el.innerHTML = `
     <div class="card">
       <div class="card-title">오늘의 복습</div>
       <div class="card-sub">자주 틀린 항목, ★ 중요 표시한 항목, 학습한 지 오래된 항목을 우선순위로 골라서 보여줍니다.</div>
+      <div class="review-setup review-filters">
+        <select id="review-filter-type" onchange="reviewFilterType=this.value;renderReviewTab()">
+          <option value="all" ${reviewFilterType === 'all' ? 'selected' : ''}>전체 유형</option>
+          <option value="flashcard" ${reviewFilterType === 'flashcard' ? 'selected' : ''}>플래시카드</option>
+          <option value="quiz" ${reviewFilterType === 'quiz' ? 'selected' : ''}>예상문제</option>
+        </select>
+        <select id="review-filter-tag" onchange="reviewFilterTag=this.value;renderReviewTab()">
+          <option value="all">전체 태그</option>
+          ${tags.map(t => `<option value="${escapeHtml(t)}" ${reviewFilterTag === t ? 'selected' : ''}>${escapeHtml(t)}</option>`).join('')}
+        </select>
+        <select id="review-filter-batch" onchange="reviewFilterBatch=this.value;renderReviewTab()">
+          <option value="all">전체 분류</option>
+          ${batches.map(b => `<option value="${escapeHtml(b)}" ${reviewFilterBatch === b ? 'selected' : ''}>${escapeHtml(b)}</option>`).join('')}
+        </select>
+      </div>
+      <div class="review-setup review-scope">
+        <label class="radio-row"><input type="radio" name="review-scope" ${reviewScope === 'all' ? 'checked' : ''} onchange="reviewScope='all';renderReviewTab()"> 전체 항목</label>
+        <label class="radio-row"><input type="radio" name="review-scope" ${reviewScope === 'confusing' ? 'checked' : ''} onchange="reviewScope='confusing';renderReviewTab()"> 헷갈리는 것만</label>
+      </div>
+      ${maxN > 0 ? `
       <div class="review-setup">
         <label style="font-size:13.5px;font-weight:600">복습 개수:</label>
         <select id="review-count-select" onchange="reviewCount=parseInt(this.value)">
-          ${[5, 10, 15, 20, 30, maxN].filter((v, i, a) => v <= maxN && a.indexOf(v) === i).sort((a, b) => a - b).map(n => `<option value="${n}" ${n === reviewCount ? 'selected' : ''}>${n}개</option>`).join('')}
+          ${countOptions}
         </select>
         <button class="btn btn-primary" onclick="startReview()">복습 시작</button>
       </div>
+      ` : `<div class="empty-hint">선택한 조건에 맞는 항목이 없습니다.</div>`}
     </div>
   `;
 }
@@ -805,13 +916,49 @@ function renderReviewTab() {
 function startReview() {
   const sel = document.getElementById('review-count-select');
   if (sel) reviewCount = parseInt(sel.value);
-  reviewQueue = items.slice().sort((a, b) => priorityScore(b) - priorityScore(a)).slice(0, reviewCount);
+  const pool = getReviewPool();
+  reviewQueue = pool.slice().sort((a, b) => priorityScore(b) - priorityScore(a)).slice(0, reviewCount);
   reviewIdx = 0;
   reviewCorrect = 0;
   reviewWrong = 0;
   reviewFlipped = false;
   reviewActive = true;
+  document.addEventListener('keydown', handleSessionKeydown);
   renderReviewSession();
+}
+
+function handleSessionKeydown(e) {
+  if (!reviewActive || reviewIdx >= reviewQueue.length) return;
+  const tag = (document.activeElement && document.activeElement.tagName) || '';
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+  const item = reviewQueue[reviewIdx];
+  if (item.type === 'flashcard') {
+    if (!reviewFlipped) {
+      if (e.key === 'Enter') { e.preventDefault(); flipSessionCard(); }
+    } else {
+      if (e.key === '1') { e.preventDefault(); gradeCurrent(true); }
+      else if (e.key === '2') { e.preventDefault(); gradeCurrent(false); }
+      else if (e.key === 'Enter') { e.preventDefault(); skipCurrent(); }
+    }
+  } else {
+    if (!quizAnswered) {
+      if (['1', '2', '3', '4'].includes(e.key)) { e.preventDefault(); pickSessionChoice(parseInt(e.key)); }
+    } else {
+      if (e.key === '1') { e.preventDefault(); assessConfidence(true); }
+      else if (e.key === '2') { e.preventDefault(); assessConfidence(false); }
+      else if (e.key === 'Enter') { e.preventDefault(); nextReviewItem(); }
+    }
+  }
+}
+
+function flashGradeButton(kind, cb) {
+  const btn = document.querySelector('.grade-icon-btn.' + kind);
+  if (btn) {
+    btn.classList.add('filled');
+    setTimeout(cb, 160);
+  } else {
+    cb();
+  }
 }
 
 function renderReviewSession() {
@@ -845,7 +992,7 @@ function renderFlashcardSession(item) {
         <div class="fc-front">
           <div class="fc-label">Q</div>
           <div class="fc-text">${escapeHtml(item.q)}</div>
-          <div class="fc-hint">클릭하여 뒤집기</div>
+          <div class="fc-hint">클릭하여 뒤집기 (Enter)</div>
         </div>
         <div class="fc-back">
           <div class="fc-label">A</div>
@@ -859,14 +1006,21 @@ function renderFlashcardSession(item) {
 
 function flipSessionCard() {
   reviewFlipped = !reviewFlipped;
+  const item = reviewQueue[reviewIdx];
   const card = document.getElementById('session-fc-card');
   if (card) card.classList.toggle('flipped', reviewFlipped);
   const gradeArea = document.getElementById('session-grade-area');
   if (reviewFlipped && gradeArea) {
-    gradeArea.innerHTML = `<div class="grade-row">
-      <button class="grade-btn bad" onclick="gradeCurrent(false)">👎 헷갈려요</button>
-      <button class="grade-btn good" onclick="gradeCurrent(true)">👍 알아요</button>
-    </div>`;
+    const expHtml = item.explanation ? `<div class="explanation">${escapeHtml(item.explanation)}</div>` : '';
+    gradeArea.innerHTML = `
+      ${expHtml}
+      <div class="grade-row">
+        <button class="grade-icon-btn star" onclick="gradeCurrent(true)" title="안다 (1)">★</button>
+        <button class="grade-icon-btn check" onclick="gradeCurrent(false)" title="모른다 (2)">✓</button>
+      </div>
+      <div class="grade-kbd-hint">1 = know　2 = confuse</div>
+      <div class="skip-link" onclick="skipCurrent()">건너뛰고 다음 → (Enter)</div>
+    `;
   } else if (gradeArea) {
     gradeArea.innerHTML = '';
   }
@@ -875,7 +1029,13 @@ function flipSessionCard() {
 function gradeCurrent(correct) {
   const item = reviewQueue[reviewIdx];
   recordResult(item, correct);
+  const it = items.find(x => x.id === item.id);
+  if (it) { it.confused = !correct; saveItems(); persistUpsert(it); }
   if (correct) reviewCorrect++; else reviewWrong++;
+  flashGradeButton(correct ? 'star' : 'check', () => { reviewIdx++; renderReviewSession(); });
+}
+
+function skipCurrent() {
   reviewIdx++;
   renderReviewSession();
 }
@@ -890,7 +1050,10 @@ function recordResult(sourceItem, correct) {
   persistUpsert(it);
 }
 
+let quizAnswered = false;
+
 function renderQuizSession(item) {
+  quizAnswered = false;
   const wrap = document.getElementById('session-wrap');
   wrap.innerHTML = `
     <div id="quiz-session-wrap">
@@ -898,15 +1061,16 @@ function renderQuizSession(item) {
       <div class="choices" id="session-choices">
         ${item.choices.map((c, ci) => `<button class="choice-btn" data-ci="${ci + 1}" onclick="pickSessionChoice(${ci + 1})">${ci + 1}. ${escapeHtml(c)}</button>`).join('')}
       </div>
+      <div id="session-result" style="display:none"></div>
       <div class="explanation" id="session-exp" style="display:none">${escapeHtml(item.explanation || '')}</div>
-      <div class="btn-row session-next" id="session-next-area" style="display:none">
-        <button class="btn btn-primary" onclick="nextReviewItem()">다음</button>
-      </div>
+      <div id="session-next-area" style="display:none"></div>
     </div>
   `;
 }
 
 function pickSessionChoice(ci) {
+  if (quizAnswered) return;
+  quizAnswered = true;
   const item = reviewQueue[reviewIdx];
   const btns = document.querySelectorAll('#session-choices .choice-btn');
   btns.forEach(btn => {
@@ -916,12 +1080,34 @@ function pickSessionChoice(ci) {
     if (btnCi === ci && ci !== item.answer) btn.classList.add('wrong');
     if (btnCi === ci && ci === item.answer) { btn.classList.remove('reveal-correct'); btn.classList.add('correct'); }
   });
+  const correctNow = ci === item.answer;
+  const resultEl = document.getElementById('session-result');
+  if (resultEl) {
+    resultEl.style.display = 'block';
+    resultEl.className = correctNow ? 'session-result ok' : 'session-result bad';
+    resultEl.textContent = correctNow ? '✅ 정답입니다' : `❌ 오답입니다 (정답: ${item.answer}번)`;
+  }
   const exp = document.getElementById('session-exp');
   if (exp && item.explanation) exp.style.display = 'block';
-  document.getElementById('session-next-area').style.display = 'flex';
-  const correct = ci === item.answer;
-  recordResult(item, correct);
-  if (correct) reviewCorrect++; else reviewWrong++;
+  const nextArea = document.getElementById('session-next-area');
+  nextArea.style.display = 'block';
+  nextArea.innerHTML = `
+    <div class="grade-row">
+      <button class="grade-icon-btn star" onclick="assessConfidence(true)" title="자신있게 맞음 (1)">★</button>
+      <button class="grade-icon-btn check" onclick="assessConfidence(false)" title="헷갈렸음 (2)">✓</button>
+    </div>
+    <div class="grade-kbd-hint">1 = know　2 = confuse</div>
+    <div class="skip-link" onclick="nextReviewItem()">건너뛰고 다음 → (Enter)</div>
+  `;
+  recordResult(item, correctNow);
+  if (correctNow) reviewCorrect++; else reviewWrong++;
+}
+
+function assessConfidence(isConfident) {
+  const item = reviewQueue[reviewIdx];
+  const it = items.find(x => x.id === item.id);
+  if (it) { it.confused = !isConfident; saveItems(); persistUpsert(it); }
+  flashGradeButton(isConfident ? 'star' : 'check', () => nextReviewItem());
 }
 
 function nextReviewItem() {
