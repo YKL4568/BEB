@@ -235,6 +235,12 @@ const MIGRATION_FLAG_KEY = 'mge_migrated_v1';
 let db = null, auth = null, currentUser = null, unsubscribeItems = null;
 let authMode = 'login'; // 'login' | 'signup'
 
+// ─── 게스트(비로그인 샘플 보기) 모드 ───────────────────────────────────────────
+// 아래 DEMO_UID를 준형님 계정의 Firebase uid로 채워야 게스트 보기가 동작합니다.
+// (Firebase 콘솔 > Authentication > Users 목록에서 해당 계정의 User UID를 복사)
+const DEMO_UID = 'zkqbeqXkq3eNN3YQuPDDCdpwtst1';
+let guestMode = false;
+
 function bootFirebase() {
   try {
     firebase.initializeApp(FIREBASE_CONFIG);
@@ -272,8 +278,44 @@ function renderAuthScreen(errorMsg) {
       <div class="btn-row">
         <button class="btn btn-ghost btn-sm" onclick="toggleAuthMode()">${authMode === 'login' ? '계정이 없다면 회원가입' : '이미 계정이 있다면 로그인'}</button>
       </div>
+      <div class="btn-row">
+        <button class="btn btn-ghost btn-sm" onclick="enterGuestMode()">👀 게스트로 샘플 둘러보기 (읽기 전용)</button>
+      </div>
     </div>
   `;
+}
+
+function enterGuestMode() {
+  if (!DEMO_UID || DEMO_UID === 'PUT_YOUR_FIREBASE_UID_HERE') {
+    renderAuthScreen('게스트 보기가 아직 설정되지 않았습니다. 관리자에게 문의해주세요.');
+    return;
+  }
+  guestMode = true;
+  currentUser = null;
+  currentPageTab = currentPageTab === 'add' ? 'review' : currentPageTab;
+  document.getElementById('auth-status').innerHTML =
+    `<span class="label-text">👀 게스트(읽기 전용)</span><button class="btn btn-ghost btn-sm" onclick="exitGuestMode()" title="게스트 모드 종료">🚪<span class="label-text"> 로그인 화면으로</span></button>`;
+  const addTabBtn = document.querySelector('.ptab[data-tab="add"]');
+  if (addTabBtn) addTabBtn.style.display = 'none';
+  document.querySelectorAll('.ptab').forEach(b => b.classList.toggle('active', b.dataset.tab === currentPageTab));
+  document.getElementById('page-content').innerHTML = `<div class="card"><div class="empty-hint">샘플 데이터를 불러오는 중...</div></div>`;
+  db.collection('users').doc(DEMO_UID).collection('items').get().then(snap => {
+    items = snap.docs.map(d => d.data());
+    if (currentPageTab === 'list') renderListTab();
+    else renderReviewTab();
+  }).catch(e => {
+    document.getElementById('page-content').innerHTML =
+      `<div class="card"><div class="card-title">샘플 데이터를 불러오지 못했습니다</div><div class="msg err">${escapeHtml(e.message)}</div></div>`;
+  });
+}
+
+function exitGuestMode() {
+  guestMode = false;
+  items = loadItems();
+  document.getElementById('auth-status').innerHTML = '';
+  const addTabBtn = document.querySelector('.ptab[data-tab="add"]');
+  if (addTabBtn) addTabBtn.style.display = '';
+  renderAuthScreen();
 }
 
 function toggleAuthMode() {
@@ -409,7 +451,8 @@ function reasonTags(item) {
 
 // ─── TOP TABS ────────────────────────────────────────────────────────────────
 function switchPageTab(tab) {
-  if (!currentUser) return;
+  if (!currentUser && !guestMode) return;
+  if (guestMode && tab === 'add') return;
   currentPageTab = tab;
   document.querySelectorAll('.ptab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
   if (tab === 'review') renderReviewTab();
@@ -536,6 +579,7 @@ function showMsg(id, text, ok) {
 }
 
 function submitFlashcardForm() {
+  if (guestMode) return;
   const q = document.getElementById('f-q').value.trim();
   const a = document.getElementById('f-a').value.trim();
   const explanation = document.getElementById('f-exp').value.trim();
@@ -559,6 +603,7 @@ function submitFlashcardForm() {
 }
 
 function submitQuizForm() {
+  if (guestMode) return;
   const text = document.getElementById('q-text').value.trim();
   const choices = [0, 1, 2, 3].map(i => document.getElementById('q-choice-' + i).value.trim());
   const answerEl = document.querySelector('input[name="q-answer"]:checked');
@@ -589,6 +634,7 @@ function cancelEdit() {
 }
 
 function handleBulkImport() {
+  if (guestMode) return;
   const raw = document.getElementById('bulk-import-text').value.trim();
   if (!raw) { showMsg('import-msg', '붙여넣은 내용이 없습니다.', false); return; }
   let parsed;
@@ -677,6 +723,7 @@ function downloadTemplateCsv() {
 }
 
 function handleTableImport() {
+  if (guestMode) return;
   const raw = document.getElementById('table-import-text').value;
   if (!raw.trim()) { showMsg('table-msg', '붙여넣은 내용이 없습니다.', false); return; }
   const delim = detectDelimiter(raw);
@@ -719,11 +766,16 @@ let listFilterType = 'all';
 let listFilterTag = 'all';
 let listSearch = '';
 
+function guestBannerHtml() {
+  return guestMode ? `<div class="card" style="background:#FEF9E7;border-color:#FDE68A"><div style="font-size:13px;color:#92400E">👀 게스트 모드로 샘플 데이터를 보고 있어요. 수정·삭제·등록은 할 수 없고, 직접 로그인/가입하면 나만의 문제를 만들 수 있습니다.</div></div>` : '';
+}
+
 function renderListTab() {
   const el = document.getElementById('page-content');
   el.classList.remove('center-mode');
   const tags = Array.from(new Set(items.map(it => it.tag).filter(Boolean))).sort();
   el.innerHTML = `
+    ${guestBannerHtml()}
     <div class="card">
       <div class="card-title">내 목록 (${items.length}개)</div>
       <div class="list-toolbar">
@@ -773,9 +825,10 @@ function renderItemRow(it) {
         </div>
       </div>
       <div class="item-actions">
+        ${guestMode ? `<span class="star-btn ${it.starred ? 'on' : ''}" style="cursor:default">★</span>` : `
         <button class="star-btn ${it.starred ? 'on' : ''}" title="중요 표시" onclick="toggleStar('${it.id}')">★</button>
         <button class="icon-btn" title="수정" onclick="editItem('${it.id}')">✏️</button>
-        <button class="icon-btn" title="삭제" onclick="deleteItem('${it.id}')">🗑️</button>
+        <button class="icon-btn" title="삭제" onclick="deleteItem('${it.id}')">🗑️</button>`}
       </div>
     </div>`;
 }
@@ -809,11 +862,13 @@ function renderListBody() {
 }
 
 function toggleStar(id) {
+  if (guestMode) return;
   const it = items.find(x => x.id === id);
   if (it) { it.starred = !it.starred; saveItems(); persistUpsert(it); renderListBody(); }
 }
 
 function deleteItem(id) {
+  if (guestMode) return;
   if (!confirm('이 항목을 삭제할까요?')) return;
   items = items.filter(x => x.id !== id);
   saveItems();
@@ -822,6 +877,7 @@ function deleteItem(id) {
 }
 
 function editItem(id) {
+  if (guestMode) return;
   const it = items.find(x => x.id === id);
   if (!it) return;
   editingId = id;
@@ -886,6 +942,7 @@ function renderReviewTab() {
     .sort((a, b) => a - b)
     .map(n => `<option value="${n}" ${n === reviewCount ? 'selected' : ''}>${n}개</option>`).join('');
   el.innerHTML = `
+    ${guestBannerHtml()}
     <div class="card">
       <div class="card-title">오늘의 복습</div>
       <div class="card-sub">자주 틀린 항목, ★ 중요 표시한 항목, 학습한 지 오래된 항목을 우선순위로 골라서 보여줍니다.</div>
@@ -1034,7 +1091,7 @@ function gradeCurrent(correct) {
   const item = reviewQueue[reviewIdx];
   recordResult(item, correct);
   const it = items.find(x => x.id === item.id);
-  if (it) { it.confused = !correct; saveItems(); persistUpsert(it); }
+  if (it && !guestMode) { it.confused = !correct; saveItems(); persistUpsert(it); }
   if (correct) reviewCorrect++; else reviewWrong++;
   flashGradeButton(correct ? 'star' : 'check', () => { reviewIdx++; renderReviewSession(); });
 }
@@ -1045,6 +1102,7 @@ function skipCurrent() {
 }
 
 function recordResult(sourceItem, correct) {
+  if (guestMode) return;
   const it = items.find(x => x.id === sourceItem.id);
   if (!it) return;
   it.timesShown = (it.timesShown || 0) + 1;
@@ -1109,7 +1167,7 @@ function pickSessionChoice(ci) {
 function assessConfidence(isConfident) {
   const item = reviewQueue[reviewIdx];
   const it = items.find(x => x.id === item.id);
-  if (it) { it.confused = !isConfident; saveItems(); persistUpsert(it); }
+  if (it && !guestMode) { it.confused = !isConfident; saveItems(); persistUpsert(it); }
   flashGradeButton(isConfident ? 'star' : 'check', () => nextReviewItem());
 }
 
