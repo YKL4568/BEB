@@ -125,8 +125,12 @@ button{font-family:inherit;cursor:pointer}
 .unit-item:hover{background:#F1EDE3}
 .unit-item.active{background:rgba(91,147,214,.12);border-left-color:var(--accent);color:var(--navy);font-weight:600}
 .unit-item.done .unit-title{text-decoration:line-through;color:var(--text-muted)}
-.unit-item .unit-title{flex:1}
+.unit-item .unit-title{
+  flex:1;word-break:keep-all;overflow-wrap:break-word;
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;
+}
 .unit-item .check{color:#16A34A;font-size:12px}
+.unit-ring-wrap{position:relative;display:inline-flex;flex-shrink:0}
 .unit-ring{
   width:14px;height:14px;border-radius:50%;flex-shrink:0;position:relative;
   background:conic-gradient(var(--accent) calc(var(--pct) * 1%), #E3DDC9 0);
@@ -137,6 +141,15 @@ button{font-family:inherit;cursor:pointer}
 }
 .unit-item.active .unit-ring::after{background:#EAEFF4}
 .unit-item:hover .unit-ring::after{background:#F1EDE3}
+.unit-ring-tip{
+  display:none;position:absolute;right:0;top:20px;z-index:50;min-width:110px;
+  background:var(--navy);color:#fff;font-size:11px;font-weight:600;line-height:1.9;
+  padding:8px 11px;border-radius:7px;white-space:nowrap;text-align:left;
+  box-shadow:0 6px 18px rgba(0,0,0,.2);
+}
+.step-tip-icon{display:inline-block;width:12px;font-weight:800;color:rgba(255,255,255,.35)}
+.step-tip-icon.on{color:#6EE7B7}
+.unit-ring-wrap:hover .unit-ring-tip{display:block}
 .priority-badge{
   font-size:9.5px;font-weight:700;padding:2px 5px;border-radius:4px;color:#fff;flex-shrink:0;
 }
@@ -377,6 +390,16 @@ function markDone(unitId, key){
 
 // 단원별 4단계(개념학습/시험포인트/플래시카드/문제풀기) 완료 상태 판정
 // 시험포인트가 없는 단원은 3단계만으로 판정합니다.
+const STEP_LABELS = { concept: '개념학습', examtips: '시험포인트', fc: '플래시카드', quiz: '문제풀기' };
+
+// 사이드바 표시 전용: 구조원리 과목 단원명의 중간 항목만 짧게 줄여서 보여줍니다 (원본 데이터는 그대로 유지).
+function sidebarDisplayTitle(u){
+  let t = u.title;
+  if(u.subject === '의료기기 구조원리'){
+    t = t.replace('모니터링기기', '모니터링').replace('의료영상기기', '의료영상').replace('기타 진단기기', '기타');
+  }
+  return t;
+}
 function unitStepDefs(u){
   const steps = [{ key: 'concept' }];
   if(u.exam_tips) steps.push({ key: 'examtips' });
@@ -445,10 +468,15 @@ function renderUnitList(){
     const done = isUnitDone(u);
     item.className = 'unit-item' + (currentUnit && currentUnit.unit_id === u.unit_id ? ' active' : '') + (done ? ' done' : '');
     const pClass = u.priority === '상' ? 'p-high' : (u.priority === '중' ? 'p-mid' : 'p-low');
-    const ringHtml = '<span class="unit-ring" style="--pct:' + pct + '" title="' + doneCount + ' / ' + steps.length + '단계 완료 (개념학습·시험포인트·플래시카드·문제풀기)"></span>';
+    const stepTip = steps.map(s => '<span class="step-tip-icon' + (p[s.key] ? ' on' : '') + '">' + (p[s.key] ? '✓' : '○') + '</span> ' + (STEP_LABELS[s.key] || s.key)).join('<br>');
+    const ringHtml =
+      '<span class="unit-ring-wrap">' +
+        '<span class="unit-ring" style="--pct:' + pct + '"></span>' +
+        '<span class="unit-ring-tip">' + stepTip + '</span>' +
+      '</span>';
     item.innerHTML =
       '<span class="priority-badge ' + pClass + '">' + (u.priority || '-') + '</span>' +
-      '<span class="unit-title">' + u.title + '</span>' +
+      '<span class="unit-title">' + sidebarDisplayTitle(u) + '</span>' +
       ringHtml +
       (done ? '<span class="check">✓</span>' : '');
     item.onclick = () => selectUnit(u.unit_id);
@@ -515,7 +543,7 @@ function renderContent(){
     area.innerHTML = '<div class="placeholder">왼쪽 사이드바에서 단원을 선택하세요</div>';
     return;
   }
-  area.classList.toggle('center-mode', currentTab === 'flashcards' || currentTab === 'quiz');
+  area.classList.toggle('center-mode', currentTab === 'quiz');
   if(currentTab === 'concept') renderConcept(area);
   else if(currentTab === 'examtips') renderExamTips(area);
   else if(currentTab === 'flashcards') renderFlashcards(area);
